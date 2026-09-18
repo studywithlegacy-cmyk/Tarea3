@@ -1,0 +1,5 @@
+node_modules/
+.antigravity/
+.env
+.DS_Store
+Thumbs.db
