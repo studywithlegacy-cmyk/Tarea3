@@ -13,9 +13,11 @@ const publicFiles = new Map([
   ['/index.html', ['index.html', 'text/html']],
   ['/styles.css', ['css/styles.css', 'text/css']],
   ['/app.js', ['js/app.js', 'text/javascript']],
-  ['/public/index.html', ['index.html', 'text/html']],
-  ['/public/styles.css', ['css/styles.css', 'text/css']],
-  ['/public/app.js', ['js/app.js', 'text/javascript']],
+  ['/public/index.html', ['public/index.html', 'text/html']],
+  ['/public/styles.css', ['public/styles.css', 'text/css']],
+  ['/public/app.js', ['public/app.js', 'text/javascript']],
+  ['/public/css/styles.css', ['public/css/styles.css', 'text/css']],
+  ['/public/js/app.js', ['public/js/app.js', 'text/javascript']],
   ['/proyecto-incidentes-tema1/index.html', ['proyecto-incidentes-tema1/index.html', 'text/html']],
   ['/css/styles.css', ['css/styles.css', 'text/css']],
   ['/data/incidentes.json', ['data/incidentes.json', 'application/json']],
@@ -29,7 +31,7 @@ const publicFiles = new Map([
   ['/js/app.js', ['js/app.js', 'text/javascript']]
 ]);
 
-// Respuesta común HTTP
+// Respuesta común HTTP con cabeceras defensivas y CORS
 function send(res, status, body, type = 'application/json', headers = {}) {
   const payload = type === 'application/json' ? JSON.stringify(body) : body;
   res.writeHead(status, {
@@ -37,6 +39,9 @@ function send(res, status, body, type = 'application/json', headers = {}) {
     'Content-Length': Buffer.byteLength(payload),
     'Cache-Control': 'no-store',
     'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Accept',
     ...headers
   });
   res.end(payload);
@@ -56,7 +61,19 @@ function createApp({ list = listIncidents } = {}) {
       return;
     }
 
-    // Validación de método HTTP (solo GET permitido)
+    // Negociación preflight CORS (OPTIONS)
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Accept',
+        'Access-Control-Max-Age': '86400'
+      });
+      res.end();
+      return;
+    }
+
+    // Validación de método HTTP (solo GET permitido para lectura de datos)
     if (req.method !== 'GET') {
       send(res, 405, { error: 'Método no permitido. Utilice GET.' }, 'application/json', { Allow: 'GET' });
       return;
@@ -80,7 +97,7 @@ function createApp({ list = listIncidents } = {}) {
         return;
       }
 
-      // 3. Entrega de archivos estáticos del front-end
+      // 3. Entrega de archivos estáticos del front-end mediante lectura asíncrona no bloqueante
       const [file, type] = publicFiles.get(pathname);
       send(res, 200, await readFile(path.join(root, file)), type);
 
