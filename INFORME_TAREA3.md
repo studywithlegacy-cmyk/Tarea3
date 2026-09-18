@@ -546,15 +546,3 @@ Como evidencia complementaria de fiabilidad del software, se ejecutó la baterí
 ℹ fail 0
 ```
 
----
-
-## 7. Dictamen Final del Docente Evaluador
-
-El proyecto **SOC Hospitalario — Hospital Clínico San Rafael** correspondiente a la **Tarea de la Unidad 3** satisface rigurosamente todos los estándares académicos y profesionales evaluados:
-1. Demuestra una clara articulación teórica y práctica entre aplicación puntual, plataforma digital y sistema institucional.
-2. Implementa una arquitectura N-Capas con bajo acoplamiento entre presentación, transporte HTTP, lógica de negocio y repositorio de datos.
-3. Respeta estrictamente los principios del protocolo HTTP (Stateless, semántica REST, códigos de estado canónicos y cabeceras de hardening/CORS).
-4. Hace uso exclusivo de las capacidades nativas de Node.js sin dependencias de terceros, asegurando alto rendimiento y seguridad de la cadena de suministro.
-5. Garantiza la accesibilidad web universal (WCAG 2.2 AA) mediante regiones dinámicas ARIA y manipulación segura del DOM libre de vulnerabilidades XSS.
-
-**Calificación Técnica Recomendada:** **100 / 100 — Sobresaliente.**
